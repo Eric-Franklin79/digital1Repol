@@ -28,6 +28,7 @@ window.onload = function() {
     	this.dog.destroy();	    
     }
     Dog.prototype.walk = function() {
+    	game.physics.arcade.overlap(this.dog, catcher, hit, null, this);
     	this.minSpeed = -65;
         this.maxSpeed = 65;
         this.dir = Math.random()*(4-0);
@@ -49,20 +50,6 @@ window.onload = function() {
         	this.dog.body.velocity.x = this.vx * -1;
         	this.dog.body.velocity.y = this.vy *-1;
         }
-        if(swing.isDown){
-		if(this.alive){
-			if((Math.abs(this.dog.x - catcher.x) >0) && (Math.abs(this.dog.x
-				- catcher.x) <75) && (Math.abs(this.dog.y- catcher.y) < 90) 
-				&& (Math.abs(this.dog.y - catcher.y) > 0)){
-				this.dog.kill();
-				this.alive = false;
-				score = score + 50;
-				numOfDogs -= 1;
-				scoreText.setText("Score: " + String(score));
-				count.setText("Dogs Captured: " + String(score/50));
-			}
-		}
-	}
     }
     
     var game = new Phaser.Game( 800, 600, Phaser.CANVAS, 'game', { preload: preload, create: create, update: update } );
@@ -75,6 +62,7 @@ window.onload = function() {
         game.load.image( 'catchermove', 'assets/DogCatcherMove.png' );
         game.load.image( 'spike', 'assets/dog.png' );
         game.load.image( 'gameover', 'assets/gameOver.png' );
+        game.load.atlasJSONHash('player', 'assets/player.png', 'assets/player.json');
         
     }
     
@@ -93,19 +81,22 @@ window.onload = function() {
     var timeText;
     var scoreText;
     var end = false;
-    var maxDogs = 500
-    var count;
+    var maxDogs = 250;
+    var countText, healthText;
     var start = false;
+    var health = 200, count = 0;
     
     function create() {
         // Create a sprite at the center of the screen using the 'logo' image.
         background = game.add.tileSprite(0,0, 800, 600, 'park'); 
         
-        catcher = this.game.add.sprite( game.world.centerX, game.world.centerY, 'bob' );
+        catcher = this.game.add.sprite( game.world.centerX, game.world.centerY, 'player' );
         catcher.anchor.setTo( 0.5, 0.5 );
         game.physics.enable( catcher, Phaser.Physics.ARCADE );
         catcher.body.collideWorldBounds = true;
         game.input.onDown.add(startGame, this);
+        catcher.animations.add('swing', ['DogCatcher.png', 'DogCatcherSwing.png', 'DogCatcher.png'], 15);
+        catcher.animations.add('move', ['DogCatcher.png', 'DogCatcherMove.png'], 10);
         
         // Turn on the arcade physics engine for this sprite.
         cursors = game.input.keyboard.createCursorKeys();
@@ -122,7 +113,8 @@ window.onload = function() {
         // Center it in X, and position its top 15 pixels from the top of the world.
         var style = { font: "20px Verdana", fill: "#FFFFFF", align: "center" };
         scoreText = game.add.text( 55, 10, "Score: "+ String(score), style );
-        count = game.add.text( 550, 10, "Dogs Captured: 0", style );
+        countText = game.add.text( 550, 10, "Dogs Captured: 0", style );
+        healthText = game.add.text( 550, 30, "Health: 200", style );
         scoreText.anchor.setTo( 0.5, 0.0 );
         var styleT = { font: "35px Verdana", fill: "#FFFFFF", align: "center" };
         timeText = game.add.text(300, 200, "Click to Start", styleT);
@@ -135,6 +127,10 @@ window.onload = function() {
     function update() {
     	 if(start){
     	 if(!end){
+    	 	 
+    	 	 
+    	 	 
+    	 	 
 		 if(numOfDogs === 0){win();}
 		 gameTime = new Date().getTime();
 		 updateTimer();
@@ -150,35 +146,24 @@ window.onload = function() {
 		if(cursors.left.isDown){
 			catcher.scale.x = -1;
 			catcher.body.velocity.x = -150;
-			if(Math.floor((gameTime - startTime)*.01)%2 === 0){
-				catcher.loadTexture('catchermove');
-			}
-			else{
-				catcher.loadTexture('bob');
-			}
+			catcher.animations.play('move');
 			if(swing.isDown){
-				catcher.loadTexture('catcherswing');
+				catcher.animations.play('swing');
 			}
 		}
 		else if(cursors.right.isDown){
 			
 			catcher.scale.x = 1;
 			catcher.body.velocity.x = 150;
-			if(Math.floor((gameTime - startTime)*.01)%2 === 0){
-				catcher.loadTexture('catchermove');
-			}
-			else{
-				catcher.loadTexture('bob');
-			}
+			catcher.animations.play('move');
 			if(swing.isDown){
-				catcher.loadTexture('catcherswing');
+				catcher.animations.play('swing');
 			}
 		}
 		else{ //if(cursors.left.isUp || coursers.right.isUp)      
-			catcher.body.velocity.x = 0;
-			catcher.loadTexture('bob', 0);	
+			catcher.body.velocity.x = 0;	
 			if(swing.isDown){
-				catcher.loadTexture('catcherswing');
+				catcher.animations.play('swing');
 			}
 		}
 		if(cursors.down.isDown){
@@ -238,5 +223,22 @@ window.onload = function() {
     	game.input.onDown.remove(startGame, this);
     	start = true;
     	startTime = new Date().getTime();
+    }
+    function hit(dog, player) {
+    	if(swing.downDuration(1)){
+    		dog.kill();
+    		numOfDogs -= 1;
+    		count++;
+    		health += 5;
+    		countText.setText("Dogs Captured: " + String(count));
+    	}
+    	else{
+    		health -= 1;
+    		if(health === 0 ){
+    			end = true;
+    			gameover();
+    		}
+    		healthText.setText("Health: "+ String(health));
+    	}      
     }
 };
