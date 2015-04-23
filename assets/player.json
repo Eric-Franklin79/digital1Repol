@@ -1,0 +1,36 @@
+{"frames": {
+
+"DogCatcher.png":
+{
+	"frame": {"x":2,"y":2,"w":61,"h":118},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":61,"h":118},
+	"sourceSize": {"w":61,"h":118}
+},
+"DogCatcherMove.png":
+{
+	"frame": {"x":65,"y":2,"w":60,"h":120},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":60,"h":120},
+	"sourceSize": {"w":60,"h":120}
+},
+"DogCatcherSwing.png":
+{
+	"frame": {"x":127,"y":2,"w":96,"h":118},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":96,"h":118},
+	"sourceSize": {"w":96,"h":118}
+}},
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "player.png",
+	"format": "RGBA8888",
+	"size": {"w":225,"h":124},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:e98ccc7bf89f904dc709e31d45013c04:cd7ce8b47593405f7cdec543dda23777:86d5339b780aedd87b35e2b7c0a7e11b$"
+}
+}
